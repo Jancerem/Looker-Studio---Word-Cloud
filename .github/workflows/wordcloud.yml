@@ -1,9 +1,9 @@
 name: Generar Word Cloud
 
-# Se ejecuta cada 30 minutos y también manualmente
+# Se ejecuta cada 10 minutos y también manualmente
 on:
   schedule:
-    - cron: "*/1 * * * *" # Cada 30 minutos
+    - cron: "*/1 * * * *" # Cada 10 minutos
   workflow_dispatch:
 
 jobs:
@@ -39,5 +39,5 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git add wordcloud_profesional.png
-        git commit -m "Actualizar Word Cloud automático" || echo "No hay cambios para commitear"
+        git diff --cached --quiet || git commit -m "Actualizar Word Cloud automático"
         git push https://$GH_PAT@github.com/Jancerem/Looker-Studio---Word-Cloud.git HEAD:main
