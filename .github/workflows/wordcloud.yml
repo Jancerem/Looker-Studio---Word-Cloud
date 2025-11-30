@@ -3,7 +3,7 @@ name: Generar Word Cloud
 # Se ejecuta cada 30 minutos y también manualmente
 on:
   schedule:
-    - cron: "*/30 * * * *" # Cada 30 minutos
+    - cron: "*/1 * * * *" # Cada 30 minutos
   workflow_dispatch:
 
 jobs:
