@@ -1,23 +1,14 @@
 {
-  "name": "Custom Word Cloud",
-  "description": "Beautiful real-time Word Cloud using ECharts",
+  "name": "impakta_wordcloud",
   "organization": "Impakta UANL",
-  "logoUrl": "https://www.gstatic.com/datastudio/visualization/2018/images/ds-logo.png",
-  "componentUrl": "index.html",
-  "supportUrl": "https://support.google.com/lookerstudio",
-  "privacyPolicyUrl": "https://policies.google.com/privacy",
-  "data": {
-    "dimensions": [
-      {
-        "id": "word",
-        "name": "Word"
-      }
-    ],
-    "metrics": [
-      {
-        "id": "count",
-        "name": "Count"
-      }
-    ]
-  }
+  "description": "Word Cloud dinámico para visualizar problemáticas estudiantiles.",
+  "logoUrl": "logo.png",
+  "components": {
+    "visualization": {
+      "script": "script.js",
+      "html": "index.html",
+      "css": "style.css"
+    }
+  },
+  "requiredData": []
 }
