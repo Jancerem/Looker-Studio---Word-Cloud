@@ -1,0 +1,35 @@
+name: Generar Word Cloud
+
+on:
+  schedule:
+    - cron: "*/1 * * * *"  # Cada 30 minutos
+  workflow_dispatch:        # Permite ejecutar manualmente
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        pip install pandas matplotlib wordcloud
+
+    - name: Generate Word Cloud
+      run: |
+        python generate_wordcloud.py
+
+    - name: Commit and push updated image
+      run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git add wordcloud_profesional.png
+        git commit -m "Actualizar Word Cloud automático" || echo "No hay cambios para commitear"
+        git push
