@@ -14,9 +14,9 @@ csv_data = StringIO(resp.text)
 df = pd.read_csv(csv_data, encoding="utf-8")  # soporte completo de acentos y ñ
 
 # -----------------------------
-# 2️⃣ Tomar columna F (índice 5) y pasar a mayúsculas
+# 2️⃣ Tomar columna F (índice 5)
 # -----------------------------
-text = " ".join(df.iloc[:, 5].dropna()).upper()  # todo a mayúsculas
+text = " ".join(df.iloc[:, 5].dropna())
 
 # -----------------------------
 # 3️⃣ Stopwords personalizadas
@@ -34,7 +34,7 @@ def color_func(word, font_size, position, orientation, random_state=None, **kwar
     return random.choice(palette)
 
 # -----------------------------
-# 5️⃣ Generar Word Cloud
+# 5️⃣ Generar Word Cloud con palabras en MAYÚSCULAS
 # -----------------------------
 wc = WordCloud(
     width=800,
@@ -43,7 +43,8 @@ wc = WordCloud(
     max_words=200,
     stopwords=custom_stopwords,
     colormap=None,
-    font_path="/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"  # fuente que soporta acentos y ñ
+    font_path="/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+    preprocessor=lambda s: s.upper()  # fuerza mayúsculas
 ).generate(text)
 
 wc.recolor(color_func=color_func)
