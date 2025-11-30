@@ -3,16 +3,18 @@ name: Actualizar Word Cloud
 on:
   schedule:
     - cron: '*/10 * * * *'  # cada 10 minutos
-  workflow_dispatch:        # ejecutar manualmente
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Checkout del repo
+    # 1️⃣ Checkout usando GH_PAT
     - name: Checkout
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GH_PAT }}
 
     # 2️⃣ Configurar Python
     - name: Setup Python
@@ -26,12 +28,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install pandas wordcloud matplotlib requests
 
-    # 4️⃣ Crear carpeta de fuentes (si no existe)
+    # 4️⃣ Crear carpeta de fuentes
     - name: Instalar fuente Impact
       run: |
         mkdir -p fonts
         if [ ! -f fonts/Impact.ttf ]; then
-          echo "⚠️ Asegúrate de subir Impact.ttf en fonts/ antes de ejecutar."
+          echo "⚠️ Sube Impact.ttf en fonts/ antes de ejecutar."
         fi
 
     # 5️⃣ Ejecutar script Python
@@ -44,11 +46,9 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-    # 7️⃣ Commit y push usando PAT
-    - name: Commit y push cambios
+    # 7️⃣ Commit y push cambios
+    - name: Commit y push
       run: |
         git add wordcloud_profesional.png
         git diff --cached --quiet || git commit -m "Actualizar Word Cloud automático"
-        git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/Jancerem/Looker-Studio---Word-Cloud.git HEAD:main
-      env:
-        GH_PAT: ${{ secrets.GH_PAT }}
+        git push
