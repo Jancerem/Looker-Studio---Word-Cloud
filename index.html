@@ -2,63 +2,68 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Word Cloud UANL - Profesional</title>
-<script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.2/src/wordcloud2.js"></script>
+<title>Word Cloud UANL - D3</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
 <style>
   body {
+    background: #1a1a1a;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-    background: #1a1a1a; /* Fondo oscuro elegante */
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
   }
-  #wordcloud {
-    width: 95%;
-    height: 95%;
+  svg {
+    width: 90%;
+    height: 90%;
   }
 </style>
 </head>
 <body>
-<canvas id="wordcloud"></canvas>
+<svg id="wordcloud"></svg>
 
 <script>
 const SHEET_JSON_URL = "https://script.google.com/macros/s/AKfycbzKoU7hWOvbV_xF8_gO6ayMgbKP1uzlg0SYd7R-WCmGiGFOAXlhYGroc6FaxYxIlOG7/exec";
 
-// Función para mapear frecuencia a tamaño y color
-function getWeightFactor(size) {
-  return Math.pow(size, 1.3) * 12; // Mayor diferencia entre palabras frecuentes e infrecuentes
-}
-
-function getColor(weight, maxWeight) {
-  // Gradiente: palabras frecuentes = color más brillante
-  const hue = 200; // azul
-  const saturation = 70;
-  const lightness = Math.floor(30 + (weight / maxWeight) * 50); // 30% a 80%
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-}
-
 fetch(SHEET_JSON_URL)
   .then(response => response.json())
   .then(data => {
-    // Obtener frecuencia máxima para gradientes
-    let maxFreq = 0;
-    data.forEach(item => { if(item[1] > maxFreq) maxFreq = item[1]; });
 
-    WordCloud(document.getElementById('wordcloud'), {
-      list: data,
-      gridSize: 18,
-      weightFactor: getWeightFactor,
-      fontFamily: 'Arial, sans-serif',
-      color: function(word, weight) { return getColor(weight, maxFreq); },
-      rotateRatio: 0,        // palabras alineadas, sin rotación
-      rotationSteps: 1,
-      backgroundColor: '#1a1a1a',
-      shuffle: false,        // más ordenado, palabras importantes centradas
-      origin: [null, null],
-      drawOutOfBound: false
-    });
+    const maxFreq = d3.max(data, d => d[1]);
+
+    const words = data.map(d => ({
+      text: d[0],
+      size: 20 + (d[1] / maxFreq) * 80 // tamaño mínimo 20px, máximo proporcional a frecuencia
+    }));
+
+    const layout = d3.layout.cloud()
+      .size([window.innerWidth * 0.9, window.innerHeight * 0.9])
+      .words(words)
+      .padding(5)
+      .rotate(() => (Math.random() < 0.1 ? 90 : 0)) // pocas rotaciones para legibilidad
+      .font('Arial')
+      .fontSize(d => d.size)
+      .on('end', draw);
+
+    layout.start();
+
+    function draw(words) {
+      d3.select("#wordcloud")
+        .attr("width", layout.size()[0])
+        .attr("height", layout.size()[1])
+        .append("g")
+        .attr("transform", "translate(" + layout.size()[0]/2 + "," + layout.size()[1]/2 + ")")
+        .selectAll("text")
+        .data(words)
+        .enter().append("text")
+        .style("font-size", d => d.size + "px")
+        .style("fill", d => d3.interpolateTurbo(d.size / 100)) // gradiente de color
+        .attr("text-anchor", "middle")
+        .attr("transform", d => "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")")
+        .text(d => d.text);
+    }
   })
   .catch(err => console.error("Error cargando datos:", err));
 </script>
