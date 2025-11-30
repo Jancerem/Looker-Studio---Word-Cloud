@@ -2,11 +2,22 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Word Cloud UANL</title>
+<title>Word Cloud UANL - Profesional</title>
 <script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.2/src/wordcloud2.js"></script>
 <style>
-  body { display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#f0f0f0; }
-  #wordcloud { width:90%; height:90%; }
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #1a1a1a; /* Fondo oscuro elegante */
+    font-family: 'Arial', sans-serif;
+  }
+  #wordcloud {
+    width: 95%;
+    height: 95%;
+  }
 </style>
 </head>
 <body>
@@ -15,17 +26,38 @@
 <script>
 const SHEET_JSON_URL = "https://script.google.com/macros/s/AKfycbzKoU7hWOvbV_xF8_gO6ayMgbKP1uzlg0SYd7R-WCmGiGFOAXlhYGroc6FaxYxIlOG7/exec";
 
+// Función para mapear frecuencia a tamaño y color
+function getWeightFactor(size) {
+  return Math.pow(size, 1.3) * 12; // Mayor diferencia entre palabras frecuentes e infrecuentes
+}
+
+function getColor(weight, maxWeight) {
+  // Gradiente: palabras frecuentes = color más brillante
+  const hue = 200; // azul
+  const saturation = 70;
+  const lightness = Math.floor(30 + (weight / maxWeight) * 50); // 30% a 80%
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
 fetch(SHEET_JSON_URL)
   .then(response => response.json())
   .then(data => {
+    // Obtener frecuencia máxima para gradientes
+    let maxFreq = 0;
+    data.forEach(item => { if(item[1] > maxFreq) maxFreq = item[1]; });
+
     WordCloud(document.getElementById('wordcloud'), {
-      list: data,               // [[palabra, cantidad], [palabra2, cantidad2], ...]
-      gridSize: Math.round(16 * document.getElementById('wordcloud').offsetWidth / 1024),
-      weightFactor: function (size) { return size * 10; },
+      list: data,
+      gridSize: 18,
+      weightFactor: getWeightFactor,
       fontFamily: 'Arial, sans-serif',
-      color: 'random-dark',
-      rotateRatio: 0.5,
-      backgroundColor: '#f0f0f0'
+      color: function(word, weight) { return getColor(weight, maxFreq); },
+      rotateRatio: 0,        // palabras alineadas, sin rotación
+      rotationSteps: 1,
+      backgroundColor: '#1a1a1a',
+      shuffle: false,        // más ordenado, palabras importantes centradas
+      origin: [null, null],
+      drawOutOfBound: false
     });
   })
   .catch(err => console.error("Error cargando datos:", err));
