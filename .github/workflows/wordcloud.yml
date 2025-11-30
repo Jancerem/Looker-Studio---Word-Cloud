@@ -3,8 +3,8 @@ name: Actualizar Word Cloud
 # Ejecutar cada 10 minutos
 on:
   schedule:
-    - cron: '*/1 * * * *'
-  workflow_dispatch:  # para ejecutar manualmente
+    - cron: '*/10 * * * *'  # cada 10 minutos
+  workflow_dispatch:        # ejecutar manualmente
 
 jobs:
   build:
@@ -27,7 +27,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pandas wordcloud matplotlib requests
 
-    # 4️⃣ Crear carpeta de fuentes si no existe
+    # 4️⃣ Crear carpeta de fuentes (si no existe)
     - name: Instalar fuente Impact
       run: |
         mkdir -p fonts
@@ -35,7 +35,7 @@ jobs:
           echo "⚠️ Asegúrate de subir Impact.ttf en fonts/ antes de ejecutar."
         fi
 
-    # 5️⃣ Ejecutar script Python
+    # 5️⃣ Ejecutar script Python para generar la nube
     - name: Generar Word Cloud
       run: python generate_wordcloud.py
 
@@ -45,12 +45,11 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-    # 7️⃣ Commit y push solo si la imagen cambió
-    - name: Commit cambios
+    # 7️⃣ Commit y push solo si hay cambios
+    - name: Commit y push cambios
       run: |
         git add wordcloud_profesional.png
         git diff --cached --quiet || git commit -m "Actualizar Word Cloud automático"
-        git push
+        git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Jancerem/Looker-Studio---Word-Cloud.git HEAD:main
       env:
-        # Personal Access Token con permisos de repo
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
