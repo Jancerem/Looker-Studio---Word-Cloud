@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import requests
 from io import StringIO
 from random import choice
+import unicodedata
 
 # --- 1️⃣ Descargar datos del Google Spreadsheet ---
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
@@ -15,8 +16,16 @@ df = pd.read_csv(csv_data, encoding='utf-8')
 
 # --- 2️⃣ Unir todas las respuestas en una sola cadena ---
 column_name = df.columns[5]  # columna F (índice 5)
-text = " ".join(df[column_name].dropna()).upper()  # convertir todo a mayúsculas
-text = text.encode('utf-8').decode('utf-8')
+text = " ".join(df[column_name].dropna())
+
+# --- 2️⃣a Normalizar texto: quitar acentos y ñ ---
+def quitar_acentos_y_enie(texto):
+    texto_normalizado = unicodedata.normalize('NFKD', texto)
+    texto_sin_acentos = "".join([c for c in texto_normalizado if not unicodedata.combining(c)])
+    texto_sin_acentos = texto_sin_acentos.replace("ñ", "n").replace("Ñ", "N")
+    return texto_sin_acentos
+
+text = quitar_acentos_y_enie(text).upper()  # convertir a mayúsculas
 
 # --- 3️⃣ Función para colores personalizados ---
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
@@ -29,7 +38,7 @@ wc = WordCloud(
     height=600,
     background_color="white",
     max_words=200,
-    font_path="fonts/DejaVuSans-Bold.ttf",  # fuente Impact compatible con acentos
+    font_path="fonts/DejaVuSans-Bold.ttf",  # cualquier fuente que tengas
     color_func=color_func
 ).generate(text)
 
