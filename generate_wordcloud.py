@@ -16,6 +16,7 @@ df = pd.read_csv(csv_data, encoding='utf-8')
 # --- 2️⃣ Unir todas las respuestas en una sola cadena ---
 column_name = df.columns[5]  # columna F (índice 5)
 text = " ".join(df[column_name].dropna()).upper()  # convertir todo a mayúsculas
+text = text.encode('utf-8').decode('utf-8')
 
 # --- 3️⃣ Función para colores personalizados ---
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
