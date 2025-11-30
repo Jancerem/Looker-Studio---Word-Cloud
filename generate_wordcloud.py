@@ -1,63 +1,42 @@
 import pandas as pd
-from wordcloud import WordCloud, STOPWORDS
+from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-import random
 import requests
 from io import StringIO
 
-# -----------------------------
-# 1️⃣ Descargar CSV del Google Spreadsheet
-# -----------------------------
+# --- 1️⃣ Obtener datos del Google Spreadsheet ---
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
-resp = requests.get(url)
-csv_data = StringIO(resp.text)
-df = pd.read_csv(csv_data, encoding="utf-8")  # soporte completo de acentos y ñ
+response = requests.get(url)
+csv_data = StringIO(response.text)
 
-# -----------------------------
-# 2️⃣ Tomar columna F (índice 5) y convertir a mayúsculas
-# -----------------------------
-text = " ".join(df.iloc[:, 5].dropna()).upper()
+df = pd.read_csv(csv_data)
 
-# -----------------------------
-# 3️⃣ Stopwords personalizadas (en mayúsculas)
-# -----------------------------
-custom_stopwords = set(STOPWORDS)
-custom_stopwords.update([
-    "EL", "LA", "LOS", "LAS", "ELLOS", "UNA", "UN", "EN", "Y", "DE", "QUE", "ME", "MI", "SE", "PARA", "DEL"
-])
+# --- 2️⃣ Unir todas las respuestas en una sola cadena ---
+# Aquí asumimos que tu columna es la F
+column_name = df.columns[5]  # columna F (índice 5)
+text = " ".join(df[column_name].dropna()).upper()  # todo en mayúsculas
 
-# -----------------------------
-# 4️⃣ Función de colores
-# -----------------------------
+# --- 3️⃣ Función para colores personalizados ---
+from random import choice
+
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-    palette = ["#00FFFF", "#9B30FF", "#FFFF00"]  # cian, morado, amarillo eléctricos
-    return random.choice(palette)
+    colores = ["#00FFFF", "#BF00FF", "#FFFF00"]  # cian, morado y amarillo eléctricos
+    return choice(colores)
 
-# -----------------------------
-# 5️⃣ Generar Word Cloud
-# -----------------------------
+# --- 4️⃣ Crear WordCloud ---
 wc = WordCloud(
     width=800,
     height=600,
     background_color="white",
     max_words=200,
-    stopwords=custom_stopwords,
-    colormap=None,
-    font_path="/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-    collocations=False  # evita combinar palabras ignorando mayúsculas
+    font_path="fonts/Impact.ttf",  # Asegúrate que Impact.ttf esté en fonts/
+    color_func=color_func
 ).generate(text)
 
-wc.recolor(color_func=color_func)
-
-# -----------------------------
-# 6️⃣ Guardar imagen
-# -----------------------------
+# --- 5️⃣ Guardar PNG ---
 wc.to_file("wordcloud_profesional.png")
 
-# -----------------------------
-# 7️⃣ Mostrar imagen (opcional)
-# -----------------------------
-plt.figure(figsize=(10,8))
+# --- 6️⃣ Mostrar (opcional en Colab local) ---
 plt.imshow(wc, interpolation='bilinear')
 plt.axis("off")
 plt.show()
