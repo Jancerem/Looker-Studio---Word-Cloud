@@ -1,45 +1,56 @@
-name: Generar Word Cloud
+name: Actualizar Word Cloud
 
-# Se ejecuta cada 10 minutos y también manualmente
+# Ejecutar cada 10 minutos
 on:
   schedule:
-    - cron: "*/10 * * * *"  # Cada 10 minutos
-  workflow_dispatch:
+    - cron: '*/1 * * * *'
+  workflow_dispatch:  # para ejecutar manualmente
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Clonar repo sin credenciales predeterminadas
-    - name: Checkout repository
+    # 1️⃣ Checkout del repo
+    - name: Checkout
       uses: actions/checkout@v3
-      with:
-        persist-credentials: false
 
     # 2️⃣ Configurar Python
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.12'
+        python-version: 3.12
 
     # 3️⃣ Instalar dependencias
-    - name: Install dependencies
+    - name: Instalar dependencias
       run: |
-        pip install pandas matplotlib wordcloud requests
+        python -m pip install --upgrade pip
+        pip install pandas wordcloud matplotlib requests
 
-    # 4️⃣ Ejecutar script de Word Cloud
-    - name: Generate Word Cloud
+    # 4️⃣ Crear carpeta de fuentes si no existe
+    - name: Instalar fuente Impact
       run: |
-        python generate_wordcloud.py
+        mkdir -p fonts
+        if [ ! -f fonts/Impact.ttf ]; then
+          echo "⚠️ Asegúrate de subir Impact.ttf en fonts/ antes de ejecutar."
+        fi
 
-    # 5️⃣ Commit y push automático solo si la imagen cambió
-    - name: Commit and push updated image
-      env:
-        GH_PAT: ${{ secrets.GH_PAT }}
+    # 5️⃣ Ejecutar script Python
+    - name: Generar Word Cloud
+      run: python generate_wordcloud.py
+
+    # 6️⃣ Configurar Git
+    - name: Configurar Git
       run: |
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+    # 7️⃣ Commit y push solo si la imagen cambió
+    - name: Commit cambios
+      run: |
         git add wordcloud_profesional.png
         git diff --cached --quiet || git commit -m "Actualizar Word Cloud automático"
-        git push https://Jancerem:$GH_PAT@github.com/Jancerem/Looker-Studio---Word-Cloud.git HEAD:main
+        git push
+      env:
+        # Personal Access Token con permisos de repo
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
