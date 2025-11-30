@@ -14,16 +14,16 @@ csv_data = StringIO(resp.text)
 df = pd.read_csv(csv_data, encoding="utf-8")  # soporte completo de acentos y ñ
 
 # -----------------------------
-# 2️⃣ Tomar columna F (índice 5)
+# 2️⃣ Tomar columna F (índice 5) y pasar a mayúsculas
 # -----------------------------
-text = " ".join(df.iloc[:, 5].dropna())
+text = " ".join(df.iloc[:, 5].dropna()).upper()  # todo a mayúsculas
 
 # -----------------------------
 # 3️⃣ Stopwords personalizadas
 # -----------------------------
 custom_stopwords = set(STOPWORDS)
 custom_stopwords.update([
-    "el", "la", "los", "las", "ellos", "una", "un", "en", "y", "de", "que", "me", "mi", "se", "para", "del"
+    "EL", "LA", "LOS", "LAS", "ELLOS", "UNA", "UN", "EN", "Y", "DE", "QUE", "ME", "MI", "SE", "PARA", "DEL"
 ])
 
 # -----------------------------
