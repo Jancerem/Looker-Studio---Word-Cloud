@@ -28,7 +28,7 @@ wc = WordCloud(
     height=600,
     background_color="white",
     max_words=200,
-    font_path="fonts/Impact-Latin.ttf",  # fuente Impact compatible con acentos
+    font_path="fonts/Impact.ttf",  # fuente Impact compatible con acentos
     color_func=color_func
 ).generate(text)
 
