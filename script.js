@@ -1,19 +1,25 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbzI8snWaaHrKAgFf817Rp2_WZEd0W0BYdZuQqx1teqBBb8CZ4mQN2UStWIWJVoIVyCM/exec";
+document.addEventListener("DOMContentLoaded", async () => {
+  const API_URL = "https://script.google.com/macros/s/AKfycbx2Nq4wCkQPodRS_oGEjvUgSYeMBKGjA11O0neKK4PSLJb06M2kE0DCwFmvqRX871K_/exec";
 
-google.visualization.events.addListener(google, 'ready', () => {
-    fetch(API_URL)
-        .then(response => response.json())
-        .then(data => {
-            const list = data.map(w => [w.text, w.value]);
+  try {
+    const response = await fetch(API_URL);
+    const data = await response.json();
 
-            WordCloud(document.getElementById("cloud"), {
-                list,
-                gridSize: 12,
-                weightFactor: size => size * 5,
-                color: "random-dark",
-                backgroundColor: "#ffffff",
-                rotateRatio: 0.1
-            });
-        });
+    // Convertir JSON a formato WordCloud2.js: [texto, tamaño]
+    const words = data.map(item => [item.text, item.size]);
+
+    WordCloud(document.getElementById("wordcloud"), {
+      list: words,
+      gridSize: 8,
+      weightFactor: 5,
+      fontFamily: "Impact",
+      rotateRatio: 0.4,
+      rotationSteps: 2,
+      backgroundColor: "#ffffff",
+      color: () => `hsl(${Math.random() * 360}, 70%, 50%)`
+    });
+
+  } catch (error) {
+    console.error("Error cargando datos del Word Cloud:", error);
+  }
 });
-
