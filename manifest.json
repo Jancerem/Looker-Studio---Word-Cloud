@@ -2,7 +2,6 @@
   "name": "impakta_wordcloud",
   "organization": "Impakta UANL",
   "description": "Word Cloud dinámico para visualizar problemáticas estudiantiles.",
-  "logoUrl": "logo.png",
   "components": {
     "visualization": {
       "script": "script.js",
