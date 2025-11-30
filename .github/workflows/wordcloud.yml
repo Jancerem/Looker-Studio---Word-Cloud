@@ -2,7 +2,6 @@ name: Generar WordCloud Automático
 
 on:
   schedule:
-    # Cada 10 minutos
     - cron: "*/10 * * * *"
   workflow_dispatch:
 
@@ -11,33 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Clonar repo
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Configurar Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.12"
 
-      # 3️⃣ Instalar dependencias
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pandas matplotlib wordcloud requests
 
-      # 4️⃣ Generar WordCloud
       - name: Generate WordCloud
         run: python generate_wordcloud.py
 
-      # 5️⃣ Commit y push seguro usando GH_PAT
       - name: Commit and push WordCloud
-        env:
-          GH_PAT: ${{ secrets.GH_PAT }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add wordcloud_profesional.png
           git commit -m "Actualizar Word Cloud automático" || echo "No changes to commit"
-          git push https://x-access-token:${GH_PAT}@github.com/Jancerem/Looker-Studio---Word-Cloud.git main
+          # Push usando el token
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/Jancerem/Looker-Studio---Word-Cloud.git main
