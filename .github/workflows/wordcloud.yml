@@ -2,7 +2,7 @@ name: Generar Word Cloud
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/1 * * * *"  # Cada 10 minutos
   workflow_dispatch:
 
 jobs:
@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v3
+      with:
+        persist-credentials: false  # importante para poder usar el PAT
 
     - name: Setup Python
       uses: actions/setup-python@v4
