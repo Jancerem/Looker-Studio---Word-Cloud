@@ -2,22 +2,22 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Word Cloud UANL - D3</title>
+<title>Word Cloud UANL - Profesional</title>
 <script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+<script src="d3.layout.cloud.min.js"></script> <!-- Archivo local en tu repo -->
 <style>
   body {
+    margin: 0;
     background: #1a1a1a;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
     font-family: Arial, sans-serif;
   }
   svg {
-    width: 90%;
-    height: 90%;
+    width: 800px;
+    height: 600px;
   }
 </style>
 </head>
@@ -30,19 +30,18 @@ const SHEET_JSON_URL = "https://script.google.com/macros/s/AKfycbzKoU7hWOvbV_xF8
 fetch(SHEET_JSON_URL)
   .then(response => response.json())
   .then(data => {
-
     const maxFreq = d3.max(data, d => d[1]);
 
     const words = data.map(d => ({
       text: d[0],
-      size: 20 + (d[1] / maxFreq) * 80 // tamaño mínimo 20px, máximo proporcional a frecuencia
+      size: 20 + (d[1] / maxFreq) * 80 // tamaño mínimo 20px, máximo 100px
     }));
 
     const layout = d3.layout.cloud()
-      .size([window.innerWidth * 0.9, window.innerHeight * 0.9])
+      .size([800, 600])
       .words(words)
       .padding(5)
-      .rotate(() => (Math.random() < 0.1 ? 90 : 0)) // pocas rotaciones para legibilidad
+      .rotate(() => (Math.random() < 0.1 ? 90 : 0)) // pocas rotaciones
       .font('Arial')
       .fontSize(d => d.size)
       .on('end', draw);
@@ -51,10 +50,10 @@ fetch(SHEET_JSON_URL)
 
     function draw(words) {
       d3.select("#wordcloud")
-        .attr("width", layout.size()[0])
-        .attr("height", layout.size()[1])
+        .attr("width", 800)
+        .attr("height", 600)
         .append("g")
-        .attr("transform", "translate(" + layout.size()[0]/2 + "," + layout.size()[1]/2 + ")")
+        .attr("transform", "translate(400,300)") // centro del canvas
         .selectAll("text")
         .data(words)
         .enter().append("text")
