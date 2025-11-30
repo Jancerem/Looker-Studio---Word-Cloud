@@ -11,7 +11,7 @@ from io import StringIO
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
 resp = requests.get(url)
 csv_data = StringIO(resp.text)
-df = pd.read_csv(csv_data)
+df = pd.read_csv(csv_data, encoding="utf-8")  # soporte completo de acentos y ñ
 
 # -----------------------------
 # 2️⃣ Tomar columna F (índice 5)
@@ -42,7 +42,8 @@ wc = WordCloud(
     background_color="white",
     max_words=200,
     stopwords=custom_stopwords,
-    colormap=None
+    colormap=None,
+    font_path="/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"  # fuente que soporta acentos y ñ
 ).generate(text)
 
 wc.recolor(color_func=color_func)
