@@ -8,17 +8,15 @@ from io import StringIO
 # -----------------------------
 # 1️⃣ Leer datos del Google Spreadsheet
 # -----------------------------
-# Tu CSV publicado de Google Sheets
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
 resp = requests.get(url)
 csv_data = StringIO(resp.text)
 df = pd.read_csv(csv_data)
 
-# Columna F: problemática
 text = " ".join(df['F'].dropna())
 
 # -----------------------------
-# 2️⃣ Palabras a ignorar (stopwords personalizadas)
+# 2️⃣ Stopwords personalizadas
 # -----------------------------
 custom_stopwords = set(STOPWORDS)
 custom_stopwords.update([
@@ -26,7 +24,7 @@ custom_stopwords.update([
 ])
 
 # -----------------------------
-# 3️⃣ Función para colores
+# 3️⃣ Función de colores
 # -----------------------------
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
     palette = ["#00FFFF", "#9B30FF", "#FFFF00"]  # cian, morado, amarillo eléctricos
@@ -52,7 +50,7 @@ wc.recolor(color_func=color_func)
 wc.to_file("wordcloud_profesional.png")
 
 # -----------------------------
-# 6️⃣ Mostrar imagen (opcional, útil en Colab)
+# 6️⃣ Mostrar imagen (opcional)
 # -----------------------------
 plt.figure(figsize=(10,8))
 plt.imshow(wc, interpolation='bilinear')
