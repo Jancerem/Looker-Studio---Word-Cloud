@@ -13,10 +13,13 @@ resp = requests.get(url)
 csv_data = StringIO(resp.text)
 df = pd.read_csv(csv_data)
 
-text = " ".join(df['F'].dropna())
+# -----------------------------
+# 2️⃣ Tomar columna F (índice 5)
+# -----------------------------
+text = " ".join(df.iloc[:, 5].dropna())
 
 # -----------------------------
-# 2️⃣ Stopwords personalizadas
+# 3️⃣ Stopwords personalizadas
 # -----------------------------
 custom_stopwords = set(STOPWORDS)
 custom_stopwords.update([
@@ -24,14 +27,14 @@ custom_stopwords.update([
 ])
 
 # -----------------------------
-# 3️⃣ Función de colores
+# 4️⃣ Función de colores
 # -----------------------------
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
     palette = ["#00FFFF", "#9B30FF", "#FFFF00"]  # cian, morado, amarillo eléctricos
     return random.choice(palette)
 
 # -----------------------------
-# 4️⃣ Generar Word Cloud
+# 5️⃣ Generar Word Cloud
 # -----------------------------
 wc = WordCloud(
     width=800,
@@ -45,12 +48,12 @@ wc = WordCloud(
 wc.recolor(color_func=color_func)
 
 # -----------------------------
-# 5️⃣ Guardar imagen
+# 6️⃣ Guardar imagen
 # -----------------------------
 wc.to_file("wordcloud_profesional.png")
 
 # -----------------------------
-# 6️⃣ Mostrar imagen (opcional)
+# 7️⃣ Mostrar imagen (opcional)
 # -----------------------------
 plt.figure(figsize=(10,8))
 plt.imshow(wc, interpolation='bilinear')
