@@ -6,7 +6,7 @@ import requests
 from io import StringIO
 
 # -----------------------------
-# 1️⃣ Leer datos del Google Spreadsheet
+# 1️⃣ Descargar CSV del Google Spreadsheet
 # -----------------------------
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
 resp = requests.get(url)
@@ -14,12 +14,12 @@ csv_data = StringIO(resp.text)
 df = pd.read_csv(csv_data, encoding="utf-8")  # soporte completo de acentos y ñ
 
 # -----------------------------
-# 2️⃣ Tomar columna F (índice 5)
+# 2️⃣ Tomar columna F (índice 5) y convertir a mayúsculas
 # -----------------------------
-text = " ".join(df.iloc[:, 5].dropna())
+text = " ".join(df.iloc[:, 5].dropna()).upper()
 
 # -----------------------------
-# 3️⃣ Stopwords personalizadas
+# 3️⃣ Stopwords personalizadas (en mayúsculas)
 # -----------------------------
 custom_stopwords = set(STOPWORDS)
 custom_stopwords.update([
@@ -34,7 +34,7 @@ def color_func(word, font_size, position, orientation, random_state=None, **kwar
     return random.choice(palette)
 
 # -----------------------------
-# 5️⃣ Generar Word Cloud con palabras en MAYÚSCULAS
+# 5️⃣ Generar Word Cloud
 # -----------------------------
 wc = WordCloud(
     width=800,
@@ -44,7 +44,7 @@ wc = WordCloud(
     stopwords=custom_stopwords,
     colormap=None,
     font_path="/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-    preprocessor=lambda s: s.upper()  # fuerza mayúsculas
+    collocations=False  # evita combinar palabras ignorando mayúsculas
 ).generate(text)
 
 wc.recolor(color_func=color_func)
