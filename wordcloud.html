@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Word Cloud UANL</title>
+<script src="https://cdn.jsdelivr.net/npm/wordcloud@1.1.2/src/wordcloud2.js"></script>
+<style>
+  body { display:flex; justify-content:center; align-items:center; height:100vh; margin:0; background:#f0f0f0; }
+  #wordcloud { width:90%; height:90%; }
+</style>
+</head>
+<body>
+<canvas id="wordcloud"></canvas>
+
+<script>
+const SHEET_JSON_URL = "https://script.google.com/macros/s/AKfycbzKoU7hWOvbV_xF8_gO6ayMgbKP1uzlg0SYd7R-WCmGiGFOAXlhYGroc6FaxYxIlOG7/exec";
+
+fetch(SHEET_JSON_URL)
+  .then(response => response.json())
+  .then(data => {
+    WordCloud(document.getElementById('wordcloud'), {
+      list: data,               // [[palabra, cantidad], [palabra2, cantidad2], ...]
+      gridSize: Math.round(16 * document.getElementById('wordcloud').offsetWidth / 1024),
+      weightFactor: function (size) { return size * 10; },
+      fontFamily: 'Arial, sans-serif',
+      color: 'random-dark',
+      rotateRatio: 0.5,
+      backgroundColor: '#f0f0f0'
+    });
+  })
+  .catch(err => console.error("Error cargando datos:", err));
+</script>
+</body>
+</html>
