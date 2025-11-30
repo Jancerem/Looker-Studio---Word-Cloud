@@ -3,7 +3,7 @@ name: Actualizar Word Cloud
 on:
   schedule:
     - cron: '*/10 * * * *'  # cada 10 minutos
-  workflow_dispatch:        # ejecutar manualmente
+  workflow_dispatch:        # permite ejecutar manualmente
 
 jobs:
   build:
@@ -34,7 +34,7 @@ jobs:
           echo "⚠️ Asegúrate de subir Impact.ttf en fonts/ antes de ejecutar."
         fi
 
-    # 5️⃣ Ejecutar script Python
+    # 5️⃣ Ejecutar script Python para generar la nube
     - name: Generar Word Cloud
       run: python generate_wordcloud.py
 
