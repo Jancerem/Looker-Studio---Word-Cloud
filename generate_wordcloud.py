@@ -1,59 +1,41 @@
 import pandas as pd
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
-import random
+import requests
+from io import StringIO
+from random import choice
 
-# ===============================
-# 1️⃣ Leer datos desde Google Sheets CSV
-# ===============================
-csv_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
-df = pd.read_csv(csv_url)
+# --- 1️⃣ Descargar datos del Google Spreadsheet ---
+url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
+response = requests.get(url)
+csv_data = StringIO(response.text)
 
-# ===============================
-# 2️⃣ Obtener columna F
-# ===============================
-column_name = 'F'
-if column_name not in df.columns:
-    column_name = df.columns[5]  # fallback si cambia el nombre
+# Leer CSV en UTF-8
+df = pd.read_csv(csv_data, encoding='utf-8')
 
-# Texto en mayúsculas
-text = " ".join(df[column_name].dropna().astype(str))
-text = text.upper()
+# --- 2️⃣ Unir todas las respuestas en una sola cadena ---
+column_name = df.columns[5]  # columna F (índice 5)
+text = " ".join(df[column_name].dropna()).upper()  # convertir todo a mayúsculas
 
-# ===============================
-# 3️⃣ Stopwords
-# ===============================
-stopwords = set([
-    "EL", "LA", "LOS", "LAS", "UN", "UNA", "UNO", "QUE", "DE", "Y", "EN", "CON",
-    "POR", "PARA", "SE", "MI", "TU", "SU", "NOS", "ME", "TE", "LO", "AL", "DEL", "ETC"
-])
-text = " ".join([word for word in text.split() if word not in stopwords])
-
-# ===============================
-# 4️⃣ Colores eléctricos
-# ===============================
-color_list = ["#00FFFF", "#8A2BE2", "#FFFF00"]  # cian, morado, amarillo
+# --- 3️⃣ Función para colores personalizados ---
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-    return random.choice(color_list)
+    colores = ["#00FFFF", "#BF00FF", "#FFFF00"]  # cian, morado, amarillo eléctricos
+    return choice(colores)
 
-# ===============================
-# 5️⃣ Fuente Impact
-# ===============================
-font_path = "fonts/Impact.ttf"
-
-# ===============================
-# 6️⃣ Generar WordCloud
-# ===============================
+# --- 4️⃣ Crear WordCloud ---
 wc = WordCloud(
-    width=1200,
-    height=800,
-    background_color="black",
+    width=800,
+    height=600,
+    background_color="white",
     max_words=200,
-    font_path=font_path,
+    font_path="fonts/Impact-Latin.ttf",  # fuente Impact compatible con acentos
     color_func=color_func
 ).generate(text)
 
-# ===============================
-# 7️⃣ Guardar imagen
-# ===============================
+# --- 5️⃣ Guardar PNG ---
 wc.to_file("wordcloud_profesional.png")
+
+# --- 6️⃣ Mostrar (opcional) ---
+plt.imshow(wc, interpolation='bilinear')
+plt.axis("off")
+plt.show()
