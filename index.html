@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Word Cloud UANL</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #ffffff; /* Fondo blanco, puedes cambiar */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #wordcloud {
+      max-width: 100%;
+      height: auto;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Word Cloud UANL</h1>
+  <img id="wordcloud" src="wordcloud_profesional.png" alt="Word Cloud Profesional">
+  
+  <script>
+    // Recargar imagen cada minuto con timestamp para evitar caché
+    setInterval(() => {
+      const img = document.getElementById('wordcloud');
+      img.src = "wordcloud_profesional.png?v=" + new Date().getTime();
+    }, 60000); // 60000 ms = 1 minuto
+  </script>
+</body>
+</html>
