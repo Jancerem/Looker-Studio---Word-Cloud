@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbx2Nq4wCkQPodRS_oGEjvUgSYeMBKGjA11O0neKK4PSLJb06M2kE0DCwFmvqRX871K_/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzI8snWaaHrKAgFf817Rp2_WZEd0W0BYdZuQqx1teqBBb8CZ4mQN2UStWIWJVoIVyCM/exec";
 
 google.visualization.events.addListener(google, 'ready', () => {
     fetch(API_URL)
