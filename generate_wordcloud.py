@@ -29,7 +29,7 @@ wc = WordCloud(
     height=600,
     background_color="white",
     max_words=200,
-    font_path="fonts/Impact.ttf",  # fuente Impact compatible con acentos
+    font_path="fonts/DejaVuSans-Bold.ttf",  # fuente Impact compatible con acentos
     color_func=color_func
 ).generate(text)
 
