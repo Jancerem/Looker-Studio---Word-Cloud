@@ -1,12 +1,12 @@
 import pandas as pd
 from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
-import requests
-from io import StringIO
 from random import choice
 import unicodedata
+import requests
+from io import StringIO
 
-# --- 1️⃣ Descargar datos del Google Spreadsheet ---
+# --- 1️⃣ Descargar datos del Google Spreadsheet (hoja Word Cloud) ---
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
 response = requests.get(url)
 csv_data = StringIO(response.text)
@@ -14,22 +14,13 @@ csv_data = StringIO(response.text)
 # Leer CSV en UTF-8
 df = pd.read_csv(csv_data, encoding='utf-8')
 
-# --- 2️⃣ Unir todas las respuestas en una sola cadena ---
-column_name = df.columns[5]  # columna F (índice 5)
+# --- 2️⃣ Unir todas las respuestas de la columna A ---
+column_name = df.columns[0]  # columna A → índice 0
 text = " ".join(df[column_name].dropna())
-
-# --- 2️⃣a Normalizar texto: quitar acentos y ñ ---
-def quitar_acentos_y_enie(texto):
-    texto_normalizado = unicodedata.normalize('NFKD', texto)
-    texto_sin_acentos = "".join([c for c in texto_normalizado if not unicodedata.combining(c)])
-    texto_sin_acentos = texto_sin_acentos.replace("ñ", "n").replace("Ñ", "N")
-    return texto_sin_acentos
-
-text = quitar_acentos_y_enie(text).upper()
 
 # --- 2️⃣b Agregar stopwords ---
 mis_stopwords = set(STOPWORDS)
-mis_stopwords.update(["DE", "LA", "EL", "QUE", "Y", "EN", "A", "POR", "PARA", "ES", "MUY", "TODOS", "FALTA", "TODAS"])  # agrega las que quieras ignorar
+mis_stopwords.update(["DE", "LA", "EL", "QUE", "Y", "EN", "A"])  # agrega las que quieras ignorar
 
 # --- 3️⃣ Función para colores personalizados ---
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
@@ -42,10 +33,10 @@ wc = WordCloud(
     height=600,
     background_color="white",
     max_words=200,
-    font_path="fonts/DejaVuSans-Bold.ttf",  # reemplaza con tu fuente si quieres
+    font_path="fonts/DejaVuSans-Bold.ttf",
     color_func=color_func,
     stopwords=mis_stopwords,
-    collocations=False  # evita unir palabras por defecto
+    collocations=False
 ).generate(text)
 
 # --- 5️⃣ Guardar PNG ---
