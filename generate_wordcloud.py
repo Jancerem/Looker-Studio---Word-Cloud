@@ -16,8 +16,7 @@ df = pd.read_csv(csv_data, encoding='utf-8')
 # --- 2️⃣ Unir todas las respuestas en una sola cadena ---
 column_name = df.columns[5]  # columna F (índice 5)
 text = " ".join(df[column_name].dropna())
-text = text.replace("\xa0", " ").strip()  # limpiar espacios invisibles
-text = text.upper()  # convertir a mayúsculas
+text = text.replace("\xa0", " ").strip().upper()  # limpiar espacios invisibles y pasar a mayúsculas
 
 # --- 3️⃣ Función para colores personalizados ---
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
@@ -30,9 +29,9 @@ wc = WordCloud(
     height=600,
     background_color="white",
     max_words=200,
-    font_path="fonts/DejaVuSans-Bold.ttf",  # fuente que soporta acentos y ñ
+    font_path="fonts/DejaVuSans-Bold.ttf",  # asegúrate de que la fuente esté en fonts/
     color_func=color_func,
-    collocations=False  # evitar partir palabras con acentos
+    collocations=False  # ⚡ clave para que no se rompan palabras con acentos o ñ
 ).generate(text)
 
 # --- 5️⃣ Guardar PNG ---
