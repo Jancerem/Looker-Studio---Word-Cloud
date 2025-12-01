@@ -12,23 +12,27 @@ url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44
 response = requests.get(url)
 csv_data = StringIO(response.text)
 
-# Leer CSV en UTF-8
-df = pd.read_csv(csv_data, encoding='utf-8')
+# Leer CSV en UTF-8, sin que la primera fila sea usada como header
+df = pd.read_csv(csv_data, encoding='utf-8', header=None)
 
 # --- 2️⃣ Unir todas las respuestas de la columna A ---
-column_name = df.columns[0]  # columna A → índice 0
-text = " ".join(df[column_name].dropna())
+column_index = 0  # columna A
+text = " ".join(df[column_index].dropna())  # ahora incluye fila 1
 
 # --- 2️⃣b Agregar stopwords ---
+from wordcloud import STOPWORDS
 mis_stopwords = set(STOPWORDS)
-mis_stopwords.update(["DE", "LA", "EL", "QUE", "Y", "EN", "A", "POR"])  # agrega las que quieras ignorar
+mis_stopwords.update(["DE", "LA", "EL", "QUE", "Y", "EN", "A", "POR"])
 
 # --- 3️⃣ Función para colores personalizados ---
+from random import choice
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
     colores = ["#00FFFF", "#BF00FF", "#FFFF00"]  # cian, morado, amarillo eléctricos
     return choice(colores)
 
 # --- 4️⃣ Crear WordCloud ---
+from wordcloud import WordCloud
+import matplotlib.pyplot as plt
 wc = WordCloud(
     width=800,
     height=600,
