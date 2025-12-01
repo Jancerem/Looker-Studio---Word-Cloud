@@ -29,7 +29,7 @@ text = quitar_acentos_y_enie(text).upper()
 
 # --- 2️⃣b Agregar stopwords ---
 mis_stopwords = set(STOPWORDS)
-mis_stopwords.update(["DE", "LA", "EL", "QUE", "Y", "EN", "A"])  # agrega las que quieras ignorar
+mis_stopwords.update(["DE", "LA", "EL", "QUE", "Y", "EN", "A", "POR", "PARA", "ES", "MUY", "TODOS", "FALTA", "TODAS"])  # agrega las que quieras ignorar
 
 # --- 3️⃣ Función para colores personalizados ---
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
