@@ -13,7 +13,7 @@ response = requests.get(url)
 csv_data = StringIO(response.text)
 
 # Leer CSV en UTF-8, sin que la primera fila sea usada como header
-df = pd.read_csv(csv_data, encoding='utf-8', header=None)
+df = pd.read_csv(csv_data, encoding='utf-8')
 
 # --- 2️⃣ Unir todas las respuestas de la columna A ---
 column_index = 0  # columna A
