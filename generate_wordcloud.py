@@ -5,6 +5,7 @@ import requests
 from io import StringIO
 from random import choice
 import unicodedata
+import re
 
 # --- 1️⃣ Descargar datos del Google Spreadsheet ---
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
@@ -26,6 +27,8 @@ def normalizar_texto(texto):
     texto_sin_acentos = "".join([c for c in texto_normalizado if not unicodedata.combining(c)])
     # reemplazar ñ y Ñ por n/N
     texto_sin_acentos = texto_sin_acentos.replace("ñ", "n").replace("Ñ", "N")
+    # eliminar cualquier carácter que no sea letra o espacio
+    texto_sin_acentos = re.sub(r"[^A-Z a-z]", "", texto_sin_acentos)
     return texto_sin_acentos
 
 text = normalizar_texto(text).upper()  # convertir a mayúsculas
@@ -43,8 +46,7 @@ wc = WordCloud(
     max_words=200,
     font_path="fonts/DejaVuSans-Bold.ttf",  # fuente que tengas
     color_func=color_func,
-    collocations=False,           # evita separar palabras con espacios o acentos raros
-    stopwords=set()               # aquí puedes agregar stopwords si quieres
+    collocations=False  # desactivar combinaciones problemáticas
 ).generate(text)
 
 # --- 5️⃣ Guardar PNG ---
