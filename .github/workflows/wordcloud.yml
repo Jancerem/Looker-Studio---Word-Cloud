@@ -10,37 +10,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout usando GH_PAT
+    # 1️⃣ Hacer checkout usando GH_PAT
+    - name: Checkout
       uses: actions/checkout@v3
       with:
         token: ${{ secrets.GH_PAT }}
 
+    # 2️⃣ Configurar Python
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
         python-version: 3.12
 
+    # 3️⃣ Instalar dependencias
     - name: Instalar dependencias
       run: |
         python -m pip install --upgrade pip
-        pip install pandas pillow requests
+        pip install pandas wordcloud matplotlib requests unidecode
 
-    - name: Crear carpeta de fuentes
+    # 4️⃣ Crear carpeta de fuentes si no existe
+    - name: Instalar fuente Impact
       run: |
         mkdir -p fonts
         if [ ! -f fonts/DejaVuSans-Bold.ttf ]; then
-          echo "⚠️ Sube DejaVuSans-Bold.ttf en fonts/ antes de ejecutar."
+          echo "⚠️ Sube Impact.ttf en fonts/ antes de ejecutar."
         fi
 
+    # 5️⃣ Ejecutar script Python
     - name: Generar Word Cloud
       run: python generate_wordcloud.py
 
+    # 6️⃣ Configurar Git
     - name: Configurar Git
       run: |
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
 
-    - name: Commit y push cambios
+    # 7️⃣ Commit y push cambios
+    - name: Commit y push
       run: |
         git add wordcloud_profesional.png
         git diff --cached --quiet || git commit -m "Actualizar Word Cloud automático"
