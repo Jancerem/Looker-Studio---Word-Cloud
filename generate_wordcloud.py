@@ -7,7 +7,7 @@ import requests
 from io import StringIO
 
 # --- 1️⃣ Descargar datos del Google Spreadsheet (hoja Word Cloud) ---
-url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pubhtml?gid=1639666393&single=true"
+url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
 response = requests.get(url)
 csv_data = StringIO(response.text)
 
