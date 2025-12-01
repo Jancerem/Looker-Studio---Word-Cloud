@@ -1,57 +1,64 @@
 import pandas as pd
-from wordcloud import WordCloud, STOPWORDS
-import matplotlib.pyplot as plt
+from PIL import Image, ImageDraw, ImageFont
+from collections import Counter
 import requests
 from io import StringIO
 from random import choice
-import unicodedata
+import math
 
 # --- 1️⃣ Descargar datos del Google Spreadsheet ---
 url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
 response = requests.get(url)
 csv_data = StringIO(response.text)
 
-# Leer CSV en UTF-8
 df = pd.read_csv(csv_data, encoding='utf-8')
 
 # --- 2️⃣ Unir todas las respuestas en una sola cadena ---
-column_name = df.columns[5]  # columna F (índice 5)
-text = " ".join(df[column_name].dropna())
+column_name = df.columns[5]  # columna F
+text = " ".join(df[column_name].dropna()).upper()  # convertir a mayúsculas
 
-# --- 2️⃣a Normalizar texto: quitar acentos y ñ ---
-def quitar_acentos_y_enie(texto):
-    texto_normalizado = unicodedata.normalize('NFKD', texto)
-    texto_sin_acentos = "".join([c for c in texto_normalizado if not unicodedata.combining(c)])
-    texto_sin_acentos = texto_sin_acentos.replace("ñ", "n").replace("Ñ", "N")
-    return texto_sin_acentos
+# --- 3️⃣ Contar frecuencia de palabras ---
+words = text.split()
+counter = Counter(words)
 
-text = quitar_acentos_y_enie(text).upper()
+# --- 4️⃣ Configuración de imagen ---
+width, height = 800, 600
+background_color = "white"
+img = Image.new("RGB", (width, height), background_color)
+draw = ImageDraw.Draw(img)
 
-# --- 2️⃣b Agregar stopwords ---
-mis_stopwords = set(STOPWORDS)
-mis_stopwords.update(["DE", "LA", "EL", "QUE", "Y", "EN", "A"])  # agrega las que quieras ignorar
+# --- 5️⃣ Fuente ---
+font_path = "fonts/DejaVuSans-Bold.ttf"
+max_font_size = 80
+min_font_size = 20
 
-# --- 3️⃣ Función para colores personalizados ---
-def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
+# --- 6️⃣ Función para escoger color ---
+def color_func():
     colores = ["#00FFFF", "#BF00FF", "#FFFF00"]  # cian, morado, amarillo eléctricos
     return choice(colores)
 
-# --- 4️⃣ Crear WordCloud ---
-wc = WordCloud(
-    width=800,
-    height=600,
-    background_color="white",
-    max_words=200,
-    font_path="fonts/DejaVuSans-Bold.ttf",  # reemplaza con tu fuente si quieres
-    color_func=color_func,
-    stopwords=mis_stopwords,
-    collocations=False  # evita unir palabras por defecto
-).generate(text)
+# --- 7️⃣ Ordenar palabras por frecuencia ---
+sorted_words = counter.most_common(200)
 
-# --- 5️⃣ Guardar PNG ---
-wc.to_file("wordcloud_profesional.png")
+# --- 8️⃣ Dibujar palabras ---
+x, y = 10, 10
+for word, freq in sorted_words:
+    # Escalar tamaño de fuente según frecuencia
+    font_size = int(min_font_size + (freq / max(counter.values())) * (max_font_size - min_font_size))
+    font = ImageFont.truetype(font_path, font_size)
 
-# --- 6️⃣ Mostrar (opcional) ---
-plt.imshow(wc, interpolation='bilinear')
-plt.axis("off")
-plt.show()
+    # Medir tamaño de palabra
+    w, h = draw.textsize(word, font=font)
+    
+    if x + w > width:
+        x = 10
+        y += h + 5
+    if y + h > height:
+        break
+
+    draw.text((x, y), word, fill=color_func(), font=font)
+    x += w + 5
+
+# --- 9️⃣ Guardar imagen ---
+img.save("wordcloud_profesional.png")
+print("✅ Word Cloud generado con éxito.")
