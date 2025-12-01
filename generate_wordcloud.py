@@ -18,6 +18,15 @@ df = pd.read_csv(csv_data, encoding='utf-8')
 column_name = df.columns[5]  # columna F (índice 5)
 text = " ".join(df[column_name].dropna())
 
+# --- 2️⃣a Normalizar texto: quitar acentos y ñ ---
+def quitar_acentos_y_enie(texto):
+    texto_normalizado = unicodedata.normalize('NFKD', texto)
+    texto_sin_acentos = "".join([c for c in texto_normalizado if not unicodedata.combining(c)])
+    texto_sin_acentos = texto_sin_acentos.replace("ñ", "n").replace("Ñ", "N")
+    return texto_sin_acentos
+
+text = quitar_acentos_y_enie(text).upper()
+
 # --- 2️⃣b Agregar stopwords ---
 mis_stopwords = set(STOPWORDS)
 mis_stopwords.update(["DE", "LA", "EL", "QUE", "Y", "EN", "A"])  # agrega las que quieras ignorar
