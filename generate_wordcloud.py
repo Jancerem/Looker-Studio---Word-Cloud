@@ -24,7 +24,7 @@ mis_stopwords.update(["DE", "LA", "EL", "QUE", "Y", "EN", "A", "POR", "PARA", "E
 
 # --- 3️⃣ Función para colores personalizados ---
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
-    colores = ["#00FFFF", "#BF00FF", "#FFFF00"]  # cian, morado, amarillo eléctricos
+    colores = ["#FFDD33", "#190B24", "#44C1F2", "#690DAC", "#01E5FF", "#8C3EF4", "#BAA566"]  # cian, morado, amarillo eléctricos
     return choice(colores)
 
 # --- 4️⃣ Crear WordCloud ---
