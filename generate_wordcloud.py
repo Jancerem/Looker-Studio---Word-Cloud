@@ -1,27 +1,57 @@
-from wordcloud import WordCloud
+import pandas as pd
+from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
-
-# --- Texto de prueba con acentos y ñ ---
-texto = "ENSEÑANZA, NIÑOS, CORAZÓN, EDUCACIÓN, MÚSICA, CAMIÓN, LECCIÓN"
-
-# --- Función de colores ---
+import requests
+from io import StringIO
 from random import choice
+import unicodedata
+
+# --- 1️⃣ Descargar datos del Google Spreadsheet ---
+url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTwDOPQYznFyg_EwMENdzeP44Ua8gCB2eiyfqTPcm8tJFdXXFXKNanolv60T_1u5lFMT6ZI0Je04bC8/pub?output=csv"
+response = requests.get(url)
+csv_data = StringIO(response.text)
+
+# Leer CSV en UTF-8
+df = pd.read_csv(csv_data, encoding='utf-8')
+
+# --- 2️⃣ Unir todas las respuestas en una sola cadena ---
+column_name = df.columns[5]  # columna F (índice 5)
+text = " ".join(df[column_name].dropna())
+
+# --- 2️⃣a Normalizar texto: quitar acentos y ñ ---
+def quitar_acentos_y_enie(texto):
+    texto_normalizado = unicodedata.normalize('NFKD', texto)
+    texto_sin_acentos = "".join([c for c in texto_normalizado if not unicodedata.combining(c)])
+    texto_sin_acentos = texto_sin_acentos.replace("ñ", "n").replace("Ñ", "N")
+    return texto_sin_acentos
+
+text = quitar_acentos_y_enie(text).upper()  # convertir a mayúsculas
+
+# --- 2️⃣b Definir stopwords ---
+stopwords = set(STOPWORDS)  # palabras comunes predefinidas
+mis_stopwords = {"Y", "EL", "LA", "LOS", "LAS", "DE", "EN", "QUE", "CON", "PARA"}  # agregar más si quieres
+stopwords = stopwords.union(mis_stopwords)
+
+# --- 3️⃣ Función para colores personalizados ---
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
     colores = ["#00FFFF", "#BF00FF", "#FFFF00"]  # cian, morado, amarillo eléctricos
     return choice(colores)
 
-# --- Crear WordCloud ---
+# --- 4️⃣ Crear WordCloud ---
 wc = WordCloud(
     width=800,
     height=600,
     background_color="white",
-    max_words=50,
-    font_path="fonts/DejaVuSans-Bold.ttf",  # fuente compatible con acentos y ñ
-    color_func=color_func,
-    collocations=False  # evita separar mal palabras
-).generate(texto)
+    max_words=200,
+    stopwords=stopwords,  # <--- aplicamos stopwords
+    font_path="fonts/DejaVuSans-Bold.ttf",  # cualquier fuente que tengas
+    color_func=color_func
+).generate(text)
 
-# --- Mostrar ---
+# --- 5️⃣ Guardar PNG ---
+wc.to_file("wordcloud_profesional.png")
+
+# --- 6️⃣ Mostrar (opcional) ---
 plt.imshow(wc, interpolation='bilinear')
 plt.axis("off")
 plt.show()
