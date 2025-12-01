@@ -1,5 +1,5 @@
 import pandas as pd
-from wordcloud import WordCloud, STOPWORDS
+from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 import requests
 from io import StringIO
@@ -19,18 +19,16 @@ column_name = df.columns[5]  # columna F (índice 5)
 text = " ".join(df[column_name].dropna())
 
 # --- 2️⃣a Normalizar texto: quitar acentos y ñ ---
-def quitar_acentos_y_enie(texto):
+def normalizar_texto(texto):
+    # descomponer caracteres acentuados
     texto_normalizado = unicodedata.normalize('NFKD', texto)
+    # eliminar marcas de acento
     texto_sin_acentos = "".join([c for c in texto_normalizado if not unicodedata.combining(c)])
+    # reemplazar ñ y Ñ por n/N
     texto_sin_acentos = texto_sin_acentos.replace("ñ", "n").replace("Ñ", "N")
     return texto_sin_acentos
 
-text = quitar_acentos_y_enie(text).upper()  # convertir a mayúsculas
-
-# --- 2️⃣b Definir stopwords ---
-stopwords = set(STOPWORDS)  # palabras comunes predefinidas
-mis_stopwords = {"Y", "EL", "LA", "LOS", "LAS", "DE", "EN", "QUE", "CON", "PARA"}  # agregar más si quieres
-stopwords = stopwords.union(mis_stopwords)
+text = normalizar_texto(text).upper()  # convertir a mayúsculas
 
 # --- 3️⃣ Función para colores personalizados ---
 def color_func(word, font_size, position, orientation, random_state=None, **kwargs):
@@ -43,9 +41,10 @@ wc = WordCloud(
     height=600,
     background_color="white",
     max_words=200,
-    stopwords=stopwords,  # <--- aplicamos stopwords
-    font_path="fonts/DejaVuSans-Bold.ttf",  # cualquier fuente que tengas
-    color_func=color_func
+    font_path="fonts/Impact.ttf",  # fuente que tengas
+    color_func=color_func,
+    collocations=False,           # evita separar palabras con espacios o acentos raros
+    stopwords=set()               # aquí puedes agregar stopwords si quieres
 ).generate(text)
 
 # --- 5️⃣ Guardar PNG ---
