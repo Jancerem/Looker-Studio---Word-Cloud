@@ -43,12 +43,13 @@ sorted_words = counter.most_common(200)
 # --- 8️⃣ Dibujar palabras ---
 x, y = 10, 10
 for word, freq in sorted_words:
-    # Escalar tamaño de fuente según frecuencia
     font_size = int(min_font_size + (freq / max(counter.values())) * (max_font_size - min_font_size))
     font = ImageFont.truetype(font_path, font_size)
 
-    # Medir tamaño de palabra
-    w, h = draw.textsize(word, font=font)
+    # Medir tamaño de palabra usando textbbox
+    bbox = draw.textbbox((0,0), word, font=font)
+    w = bbox[2] - bbox[0]
+    h = bbox[3] - bbox[1]
     
     if x + w > width:
         x = 10
@@ -58,6 +59,7 @@ for word, freq in sorted_words:
 
     draw.text((x, y), word, fill=color_func(), font=font)
     x += w + 5
+
 
 # --- 9️⃣ Guardar imagen ---
 img.save("wordcloud_profesional.png")
